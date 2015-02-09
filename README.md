@@ -1,2 +1,2 @@
 # reversy
-test_project
+test_project by Andrey Buryak
