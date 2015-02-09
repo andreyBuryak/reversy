@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<en>
+    <mainScreen>
+        <topPanel>
+            <playerChipsColorTF>Your chips color</playerChipsColorTF>
+            <currentPlayerTurnTF>Current turn</currentPlayerTurnTF>
+        </topPanel>
+        <bottomPanel>
+            <undoButton>Undo</undoButton>
+            <playButton>Start</playButton>
+            <replayButton>Replay</replayButton>
+            <settingsButton>Settings</settingsButton>
+        </bottomPanel>
+    </mainScreen>
+</en>
