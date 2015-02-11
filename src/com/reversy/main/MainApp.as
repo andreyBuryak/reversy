@@ -3,10 +3,16 @@
  */
 package com.reversy.main
 {
+	import com.reversy.utils.Assets;
 	import com.reversy.utils.LocaleUtil;
 
 	import flash.display.Sprite;
-	import flash.events.Event;
+	import flash.geom.Rectangle;
+	import flash.system.Capabilities;
+
+	import starling.core.Starling;
+	import starling.events.Event;
+	import starling.utils.AssetManager;
 
 	[SWF(height="760", width="650", frameRate="60")]
 	[Frame(factoryClass='com.reversy.main.Preloader')]
@@ -14,6 +20,8 @@ package com.reversy.main
 	{
 		private static var _stageWidth:Number;
 		private static var _stageHeight:Number;
+
+		private var _starling:Starling;
 
 		private var _game:Game;
 
@@ -23,8 +31,6 @@ package com.reversy.main
 
 			LocaleUtil.setLanguage(LocaleUtil.LANGUAGE_EN);
 
-			_game = new Game();
-
 			addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 		}
 
@@ -32,25 +38,60 @@ package com.reversy.main
 
 		public static function get stageHeight():Number {return _stageHeight;}
 
-		private function onAddedToStage(event:Event):void
+		private function onAddedToStage(event:Object):void
 		{
 			removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			stage.addEventListener(Event.RESIZE, onResize);
 
+			initStarling();
+
 			_stageWidth = stage.stageWidth;
 			_stageHeight = stage.stageHeight;
+		}
 
+		private function initStarling():void
+		{
+			Starling.multitouchEnabled = true;
+			Starling.handleLostContext = true;
+
+			_starling = new Starling(Game, stage, null, null, "auto", "auto");
+			_starling.simulateMultitouch = true;
+			_starling.addEventListener(starling.events.Event.ROOT_CREATED, loadAssets);
+			_starling.start();
+		}
+
+		private function loadAssets(event:starling.events.Event = null):void
+		{
+			var assetManager:AssetManager = new AssetManager();
+			assetManager.verbose = Capabilities.isDebugger;
+			assetManager.enqueue(Assets);
+			assetManager.loadQueue(loadingProgressHandler);
+
+			function loadingProgressHandler(ratio:Number):void
+			{
+				if (ratio >= 1.0)
+				{
+					initGame();
+				}
+			}
+		}
+
+		private function initGame():void
+		{
+			_game = _starling.root as Game;
 			_game.init();
-
-			addChild(_game);
 
 			Preloader.dispose();
 		}
 
-		private function onResize(event:Event):void
+		private function onResize(event:Object):void
 		{
 			_stageWidth = stage.stageWidth;
 			_stageHeight = stage.stageHeight;
+
+			Starling.current.viewPort = new Rectangle (0, 0, stage.stageWidth, stage.stageHeight);
+			_starling.stage.stageWidth = _stageWidth;
+			_starling.stage.stageHeight = _stageHeight;
 
 			_game.resize();
 		}

@@ -7,9 +7,23 @@
         </topPanel>
         <bottomPanel>
             <undoButton>Undo</undoButton>
-            <playButton>Start</playButton>
-            <replayButton>Replay</replayButton>
+            <playButton>Start game</playButton>
+            <replayButton>End game</replayButton>
             <settingsButton>Settings</settingsButton>
         </bottomPanel>
     </mainScreen>
+    <popups>
+        <submitButton>OK</submitButton>
+        <startGamePopup>
+            <caption>Chose your color</caption>
+        </startGamePopup>
+        <endGamePopup>
+            <captionWin>You win</captionWin>
+            <captionLose>You lose</captionLose>
+            <captionDeadHeat>Dead heat</captionDeadHeat>
+        </endGamePopup>
+        <settingsPopup>
+            <caption>Settings</caption>
+        </settingsPopup>
+    </popups>
 </en>

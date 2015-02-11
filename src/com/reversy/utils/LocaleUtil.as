@@ -7,8 +7,11 @@ package com.reversy.utils
 	import com.reversy.common.IObserver;
 	import com.reversy.gui.IView;
 
+	import flash.events.ErrorEvent;
+
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	import flash.utils.Dictionary;
@@ -107,6 +110,8 @@ package com.reversy.utils
 				}
 			}
 		}
+
+		public function get language():String {return _currentLanguage;}
 		//endregion
 
 		//region private methods
@@ -121,16 +126,18 @@ package com.reversy.utils
 		private function loadLocale(localeFileName:String):void
 		{
 			var loader:URLLoader = new URLLoader();
+			loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onError);
 			loader.addEventListener(IOErrorEvent.IO_ERROR, onError);
 			loader.addEventListener(Event.COMPLETE, onLoadComplete);
 			loader.load(new URLRequest(localeFileName));
 		}
 
-		private function onError(event:IOErrorEvent):void
+		private function onError(event:ErrorEvent):void
 		{
 			var loader:URLLoader = event.target as URLLoader;
 			if (loader != null)
 			{
+				loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onError);
 				loader.removeEventListener(IOErrorEvent.IO_ERROR, onError);
 				loader.removeEventListener(Event.COMPLETE, onLoadComplete);
 			}
@@ -143,6 +150,7 @@ package com.reversy.utils
 			var loader:URLLoader = event.target as URLLoader;
 			if (loader != null)
 			{
+				loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, onError);
 				loader.removeEventListener(IOErrorEvent.IO_ERROR, onError);
 				loader.removeEventListener(Event.COMPLETE, onLoadComplete);
 

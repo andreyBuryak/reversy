@@ -3,26 +3,32 @@
  */
 package com.reversy.gui.topPanel
 {
+	import com.reversy.controller.GameController;
 	import com.reversy.gui.*;
 	import com.reversy.main.MainApp;
+	import com.reversy.utils.Assets;
 	import com.reversy.utils.LocaleUtil;
-	import com.reversy.utils.StringUtil;
 
-	import flash.display.Sprite;
+	import starling.display.Image;
+	import starling.display.Sprite;
 
 	public class TopPanel extends Sprite implements IView
 	{
 		private static const PLAYER_CHIP_CONTAINER_TITLE:String = "mainScreen.topPanel.playerChipsColorTF";
 		private static const TURN_CHIP_CONTAINER_TITLE:String = "mainScreen.topPanel.currentPlayerTurnTF";
 
-		private var _background:Sprite;
-		private var _scorePanelBg:Sprite;
+		private var _controller:GameController;
+
+		private var _background:Image;
+		private var _scorePanel:ScorePanel;
 		private var _playerChipContainer:ChipContainer;
 		private var _turnChipContainer:ChipContainer;
 
-		public function TopPanel()
+		public function TopPanel(controller:GameController)
 		{
 			super();
+
+			_controller = controller;
 
 			init();
 		}
@@ -32,12 +38,12 @@ package com.reversy.gui.topPanel
 		{
 			if (_background == null)
 			{
-				_background = new TopPanelBgMc();
+				_background = new Image(Assets.getTexture(Assets.TOP_PANEL_BG_TEXTURE_NAME, Assets.ATLAS_TEXTURES_NAME));
 			}
 
-			if (_scorePanelBg == null)
+			if (_scorePanel == null)
 			{
-				_scorePanelBg = new ScorePanelBgMc();
+				_scorePanel = new ScorePanel();
 			}
 
 			if (_playerChipContainer == null)
@@ -55,9 +61,9 @@ package com.reversy.gui.topPanel
 			resize();
 
 			addChild(_background);
-			addChild(_scorePanelBg);
 			addChild(_playerChipContainer);
 			addChild(_turnChipContainer);
+			addChild(_scorePanel);
 
 			update();
 
@@ -68,7 +74,7 @@ package com.reversy.gui.topPanel
 		{
 			_background.width = MainApp.stageWidth;
 
-			_scorePanelBg.x = (MainApp.stageWidth - _scorePanelBg.width) / 2;
+			_scorePanel.x = (MainApp.stageWidth - _scorePanel.width) / 2;
 
 			var gap:int = (_background.height - _playerChipContainer.height) >> 1;
 
@@ -81,13 +87,19 @@ package com.reversy.gui.topPanel
 
 		public function update():void
 		{
-			var isPlayerWhite:Boolean = true;
-			var isWhiteTurn:Boolean = false;
+			_playerChipContainer.visible = _turnChipContainer.visible = _controller.gameStarted;
 
-			_playerChipContainer.icon = isPlayerWhite ? new ChipWhiteMc() : new ChipBlackMc();
-			_turnChipContainer.icon = isWhiteTurn ? new ChipWhiteMc() : new ChipBlackMc();
+			_playerChipContainer.iconIsWhite = _controller.playerIsWhite;
+			_turnChipContainer.iconIsWhite = _controller.whitesTurn;
 
-			updateScore(3, 5);
+			if (_controller.playerIsWhite)
+			{
+				_scorePanel.updateScore(_controller.score.scoreWhite, _controller.score.scoreBlack);
+			}
+			else
+			{
+				_scorePanel.updateScore(_controller.score.scoreBlack, _controller.score.scoreWhite);
+			}
 		}
 
 		public function updateLanguage():void
@@ -100,17 +112,6 @@ package com.reversy.gui.topPanel
 		{
 
 		}
-		//endregion
-
-		//region private methods
-		private function updateScore(scoreWhite:uint, scoreBlack:uint):void
-		{
-			var scoreString:String;
-			scoreString = StringUtil.formatIntToStr(scoreWhite) + ":" + StringUtil.formatIntToStr(scoreBlack);
-			//_view.scoreTF.text = scoreString;
-		}
-
-
 		//endregion
 	}
 }

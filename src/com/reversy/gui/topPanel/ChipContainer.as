@@ -3,34 +3,53 @@
  */
 package com.reversy.gui.topPanel
 {
-	import flash.display.DisplayObject;
-	import flash.display.Sprite;
+	import com.reversy.gui.gameField.GameChip;
+	import com.reversy.utils.Assets;
+	import com.reversy.utils.GuiUtil;
+
 	import flash.text.TextFieldAutoSize;
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 
+	import starling.display.DisplayObject;
+	import starling.display.Image;
+	import starling.display.Sprite;
+	import starling.text.TextField;
+	import starling.utils.HAlign;
+	import starling.utils.VAlign;
+
 	public class ChipContainer extends Sprite
 	{
-		private var _view:ChipContainerMc;
-		private var _icon:DisplayObject;
+		private var _view:Image;
+		private var _textField:TextField
+		private var _icon:GameChip;
 		private var _leftAlign:Boolean = true;
 
 		public function ChipContainer()
 		{
 			super();
 
-			_view = new ChipContainerMc;
+			_view = new Image(Assets.getTexture(Assets.CHIP_PLACEHOLDER_TEXTURE_NAME, Assets.ATLAS_TEXTURES_NAME));
 
-			_view.textTF.mouseEnabled = false;
-			_view.textTF.autoSize = TextFieldAutoSize.LEFT;
+			_textField = GuiUtil.createTextField(GuiUtil.TF_TOP_PANEL_STYLE);
+			_textField.height = _view.height;
+			_textField.touchable = false;
+			_textField.vAlign = VAlign.CENTER;
+			_textField.autoSize = TextFieldAutoSize.LEFT;
 			updateTextFieldAlign();
 
+			_icon = new GameChip(false);
+			_icon.x = _view.x + (_view.width >> 1);
+			_icon.y = _view.y + (_view.height >> 1);
+
+			addChild(_icon);
 			addChild(_view);
+			addChild(_textField);
 		}
 
-		override public function get width():Number {return _view.chipPlaceholder.width;}
+		override public function get width():Number {return _view.width;}
 
-		override public function get height():Number {return _view.chipPlaceholder.height;}
+		override public function get height():Number {return _view.height;}
 
 		public function set text(value:String):void
 		{
@@ -39,28 +58,14 @@ package com.reversy.gui.topPanel
 				value = "";
 			}
 
-			_view.textTF.text = value;
+			_textField.text = value;
 
 			updateTextFieldAlign();
 		}
 
-		public function set icon(value:DisplayObject):void
+		public function set iconIsWhite(value:Boolean):void
 		{
-			if (_icon != null)
-			{
-				removeChild(_icon);
-				_icon == null;
-			}
-
-			if (value != null)
-			{
-				_icon = value;
-				_icon.scaleX = _icon.scaleY = (_view.chipPlaceholder.width / _icon.width) * 0.8;
-				_icon.x = ((_view.chipPlaceholder.width - _icon.width ) / 2) - (_icon.getRect(_icon).x * _icon.scaleX);
-				_icon.y = ((_view.chipPlaceholder.height - _icon.height) / 2) - (_icon.getRect(_icon).y * _icon.scaleY);
-
-				addChild(_icon);
-			}
+			_icon.isWhite = value;
 		}
 
 		public function set leftAlign(value:Boolean):void
@@ -72,21 +77,18 @@ package com.reversy.gui.topPanel
 
 		private function updateTextFieldAlign():void
 		{
-			var tf:TextFormat = _view.textTF.defaultTextFormat;
-			tf.align = _leftAlign ? TextFormatAlign.LEFT : TextFormatAlign.RIGHT;
-			_view.textTF.defaultTextFormat = tf;
-			_view.textTF.text = _view.textTF.text;
-
 			if (_leftAlign)
 			{
-				_view.textTF.x = _view.chipPlaceholder.width + 5;
+				_textField.hAlign = HAlign.LEFT;
+				_textField.x = _view.width + 5;
 			}
 			else
 			{
-				_view.textTF.x = -(_view.textTF.width + 5);
+				_textField.hAlign = HAlign.RIGHT;
+				_textField.x = -(_textField.width + 5);
 			}
 
-			_view.textTF.y = (_view.chipPlaceholder.height - _view.textTF.height) / 2;
+			_textField.y = (_view.height - _textField.height) / 2;
 		}
 	}
 }

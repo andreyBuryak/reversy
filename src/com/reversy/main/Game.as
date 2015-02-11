@@ -4,44 +4,55 @@
 package com.reversy.main
 {
 	import com.reversy.controller.GameController;
+	import com.reversy.game.BotAI;
 	import com.reversy.game.GameEngine;
 	import com.reversy.gui.BottomPanel;
-	import com.reversy.gui.GameField;
+	import com.reversy.gui.gameField.GameField;
 	import com.reversy.gui.topPanel.TopPanel;
 	import com.reversy.utils.LocaleUtil;
 
-	import flash.display.BitmapData;
+	import starling.display.Sprite;
 
-	import flash.display.Sprite;
-
-	public class Game extends Sprite
+	public class Game extends starling.display.Sprite
 	{
 		private var _field:GameField;
 		private var _topPanel:TopPanel;
 		private var _bottomPanel:BottomPanel;
-		private var _background:Sprite;
+
+		private static var _instance:Game;
 
 		public function Game()
 		{
 			super();
+
+			if (_instance != null)
+			{
+				throw new Error("[ERROR] Game | Singleton")
+			}
+
+			_instance = this;
 		}
 
-		//region public methods
 		public function init():void
 		{
-			GameEngine.instance.addObserver(GameController.instance);
+			var engine:GameEngine = new GameEngine();
+			var controller:GameController = new GameController(engine);
+			engine.addObserver(controller);
 
-			_field = new GameField();
-			GameController.instance.addObserver(_field);
+			var bot:BotAI = new BotAI(controller);
+			controller.addObserver(bot);
+
+			_field = new GameField(controller);
+			controller.addObserver(_field);
 			addChild(_field);
 
-			_topPanel = new TopPanel();
-			GameController.instance.addObserver(_topPanel);
+			_topPanel = new TopPanel(controller);
+			controller.addObserver(_topPanel);
 			LocaleUtil.instance.addObserver(_topPanel);
 			addChild(_topPanel);
 
-			_bottomPanel = new BottomPanel();
-			GameController.instance.addObserver(_bottomPanel);
+			_bottomPanel = new BottomPanel(controller);
+			controller.addObserver(_bottomPanel);
 			LocaleUtil.instance.addObserver(_bottomPanel);
 			addChild(_bottomPanel);
 
@@ -50,31 +61,14 @@ package com.reversy.main
 
 		public function resize():void
 		{
-			updateBackground();
 			_bottomPanel.resize();
+
 			_topPanel.resize();
+
+			_field.resize();
+			_field.x = (MainApp.stageWidth - _field.width) / 2;
+			_field.y = _topPanel.height + ((_bottomPanel.y - _topPanel.height) - _field.height) / 2;
+
 		}
-		//endregion
-
-		//region private methods
-		private function updateBackground():void
-		{
-			if (_background == null)
-			{
-				_background = new Sprite();
-			}
-
-			var template:Sprite = new GameBackgroundMc();
-			var bitmap:BitmapData = new BitmapData(template.width, template.height, true, 0x000000);
-			bitmap.draw(template);
-
-			_background.graphics.clear();
-			_background.graphics.beginBitmapFill(bitmap, null, true, true);
-			_background.graphics.drawRect(0, 0, MainApp.stageWidth, MainApp.stageHeight);
-			_background.graphics.endFill();
-
-			addChildAt(_background, 0);
-		}
-		//endregion
 	}
 }
