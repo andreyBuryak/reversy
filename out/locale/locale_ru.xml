@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ru>
+    <mainScreen>
+        <topPanel>
+            <playerChipsColorTF>Цвет ваших фишек</playerChipsColorTF>
+            <currentPlayerTurnTF>Сейчас ходят</currentPlayerTurnTF>
+        </topPanel>
+        <bottomPanel>
+            <undoButton>Отмена</undoButton>
+            <playButton>Играть</playButton>
+            <replayButton>Завершить</replayButton>
+            <settingsButton>Настройки</settingsButton>
+        </bottomPanel>
+    </mainScreen>
+    <popups>
+        <submitButton>OK</submitButton>
+        <startGamePopup>
+            <caption>Выберите цвет</caption>
+        </startGamePopup>
+        <endGamePopup>
+            <captionWin>Вы выиграли</captionWin>
+            <captionLose>Вы проиграли</captionLose>
+            <captionDeadHeat>Ничья</captionDeadHeat>
+        </endGamePopup>
+        <settingsPopup>
+            <caption>Настройки</caption>
+        </settingsPopup>
+    </popups>
+</ru>

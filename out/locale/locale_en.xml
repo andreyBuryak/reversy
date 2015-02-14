@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<en>
+    <mainScreen>
+        <topPanel>
+            <playerChipsColorTF>Your chips color</playerChipsColorTF>
+            <currentPlayerTurnTF>Current turn</currentPlayerTurnTF>
+        </topPanel>
+        <bottomPanel>
+            <undoButton>Undo</undoButton>
+            <playButton>Start game</playButton>
+            <replayButton>End game</replayButton>
+            <settingsButton>Settings</settingsButton>
+        </bottomPanel>
+    </mainScreen>
+    <popups>
+        <submitButton>OK</submitButton>
+        <startGamePopup>
+            <caption>Chose your color</caption>
+        </startGamePopup>
+        <endGamePopup>
+            <captionWin>You win</captionWin>
+            <captionLose>You lose</captionLose>
+            <captionDeadHeat>Dead heat</captionDeadHeat>
+        </endGamePopup>
+        <settingsPopup>
+            <caption>Settings</caption>
+        </settingsPopup>
+    </popups>
+</en>
