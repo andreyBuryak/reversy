@@ -9,12 +9,17 @@ package com.reversy.gui.popups
 	import com.reversy.utils.GuiUtil;
 	import com.reversy.utils.LocaleUtil;
 
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
+
 	import starling.core.Starling;
 	import starling.display.Button;
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.text.TextField;
+	import starling.textures.Texture;
+	import starling.utils.AssetManager;
 	import starling.utils.HAlign;
 
 	public class APopup extends Sprite implements IPopup
@@ -30,6 +35,7 @@ package com.reversy.gui.popups
 		protected var _captionTF:TextField;
 		protected var _submitButton:Button;
 		protected var _controller:GameController;
+		protected var _mask:Image;
 
 		public function APopup(controller:GameController)
 		{
@@ -38,6 +44,11 @@ package com.reversy.gui.popups
 			_controller = controller;
 			_controller.addObserver(this);
 			LocaleUtil.instance.addObserver(this);
+
+			if (_instance == null)
+			{
+				_instance = this;
+			}
 
 			init();
 		}
@@ -50,12 +61,14 @@ package com.reversy.gui.popups
 
 		public function show():void
 		{
-			if (_instance != null)
+			if (_instance != this)
 			{
 				dispose();
 			}
 			else
 			{
+				updateMask();
+
 				resize();
 				alpha = 0;
 				Starling.juggler.tween(this, SHOW_DURATION, {alpha:1, onComplete:activate});
@@ -66,6 +79,13 @@ package com.reversy.gui.popups
 		{
 			deactivate();
 			Starling.juggler.tween(this, HIDE_DURATION, {alpha:0, onComplete:dispose});
+
+			if (_mask != null)
+			{
+				Starling.juggler.tween(_mask, HIDE_DURATION, {alpha:0.2});
+//				_mask.removeFromParent(true);
+				//_mask = null;
+			}
 		}
 
 		public function init():void
@@ -88,6 +108,8 @@ package com.reversy.gui.popups
 		{
 			this.x = (MainApp.stageWidth - _background.width) / 2;
 			this.y = (MainApp.stageHeight - _background.height) / 2;
+
+			updateMask();
 		}
 
 		public function activate():void
@@ -122,6 +144,12 @@ package com.reversy.gui.popups
 			_controller.removeObserver(this);
 			LocaleUtil.instance.removeObserver(this);
 
+			if (_mask != null)
+			{
+				_mask.removeFromParent(true);
+				_mask = null;
+			}
+
 			removeFromParent(false);
 			super.dispose();
 		}
@@ -129,6 +157,25 @@ package com.reversy.gui.popups
 		protected function submitButtonHandler(event:Event):void
 		{
 			hide();
+		}
+
+		private function updateMask():void
+		{
+			var bm:BitmapData = new BitmapData(MainApp.stageWidth, MainApp.stageHeight, false, 0x333333);
+
+			if (_mask != null)
+			{
+				_mask.removeFromParent(true);
+				_mask = null;
+			}
+
+			_mask = new Image(Texture.fromBitmapData(bm, false));
+			_mask.alpha = 0.6;
+			if (parent != null)
+			{
+				parent.addChildAt(_mask, parent.getChildIndex(this));
+			}
+
 		}
 	}
 }
